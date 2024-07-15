@@ -24,8 +24,8 @@
  * @copyright (C) 2014 onwards Microsoft, Inc. (http://microsoft.com/)
  */
 
-$string['pluginname'] = 'IOMAD OpenID Connect';
-$string['auth_iomadoidcdescription'] = 'De IOMAD OpenID Connect-plugin verschaft de mogelijkheid voor eenmalige aanmelding met configureerbare identiteitsproviders.';
+$string['pluginname'] = 'OpenID Connect';
+$string['auth_iomadoidcdescription'] = 'De OpenID Connect-plugin verschaft de mogelijkheid voor eenmalige aanmelding met configureerbare identiteitsproviders.';
 $string['cfg_authendpoint_key'] = 'Autorisatie-eindpunt';
 $string['cfg_authendpoint_desc'] = 'De URI van het token-eindpunt van je identiteitsprovider die je moet gebruiken.';
 $string['cfg_autoappend_key'] = 'Automatisch toevoegen';
@@ -67,7 +67,7 @@ $string['cfg_loginflow_rocreds_desc'] = 'In deze flow voert de gebruiker zijn ge
 $string['cfg_iomadoidcresource_key'] = 'Bron';
 $string['cfg_iomadoidcresource_desc'] = 'De OpenID Connect-bron waarvoor het verzoek moet worden verzonden.';
 $string['cfg_iomadoidcscope_key'] = 'Reikwijdte';
-$string['cfg_iomadoidcscope_desc'] = 'De te gebruiken IOMADOIDC-reikwijdte.';
+$string['cfg_iomadoidcscope_desc'] = 'De te gebruiken OIDC-reikwijdte.';
 $string['cfg_opname_key'] = 'Naam provider';
 $string['cfg_opname_desc'] = 'Dit is een voor de gebruiker zichtbaar label dat aangeeft met welke type referenties de gebruiker zich moet aanmelden. Dit label wordt in alle voor de gebruiker zichtbare delen van deze plugin gebruikt om de provider aan te geven.';
 $string['cfg_redirecturi_key'] = 'Omleidings-URL';

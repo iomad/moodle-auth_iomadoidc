@@ -24,8 +24,8 @@
  * @copyright (C) 2014 onwards Microsoft, Inc. (http://microsoft.com/)
  */
 
-$string['pluginname'] = 'IOMAD OpenID Connect';
-$string['auth_iomadoidcdescription'] = 'O plugin IOMAD OpenID Connect oferece o recurso de logon único usando provedores de identidade que podem ser configurados.';
+$string['pluginname'] = 'OpenID Connect';
+$string['auth_iomadoidcdescription'] = 'O plugin OpenID Connect oferece o recurso de logon único usando provedores de identidade que podem ser configurados.';
 $string['cfg_authendpoint_key'] = 'Ponto de extremidade de autorização';
 $string['cfg_authendpoint_desc'] = 'O URI do ponto de extremidade de autorização do seu provedor de identidade a ser usado.';
 $string['cfg_autoappend_key'] = 'Acrescentar automaticamente';
@@ -67,7 +67,7 @@ $string['cfg_loginflow_rocreds_desc'] = 'Ao usar esse fluxo, o usuário informar
 $string['cfg_iomadoidcresource_key'] = 'Recurso';
 $string['cfg_iomadoidcresource_desc'] = 'O recurso do OpenID Connect para o qual a solicitação deverá ser enviada.';
 $string['cfg_iomadoidcscope_key'] = 'Escopo';
-$string['cfg_iomadoidcscope_desc'] = 'O escopo do IOMADOIDC a ser usado.';
+$string['cfg_iomadoidcscope_desc'] = 'O escopo do OIDC a ser usado.';
 $string['cfg_opname_key'] = 'Nome do provedor';
 $string['cfg_opname_desc'] = 'Esse é um rótulo visível para o usuário que identifica o tipo de credenciais que devem ser utilizadas pelo usuário no login. Esse rótulo é usado em todas as partes visíveis para o usuário deste plugin para a identificação do seu provedor.';
 $string['cfg_redirecturi_key'] = 'URI de redirecionamento';

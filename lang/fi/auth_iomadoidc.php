@@ -24,8 +24,8 @@
  * @copyright (C) 2014 onwards Microsoft, Inc. (http://microsoft.com/)
  */
 
-$string['pluginname'] = 'IOMAD OpenID Connect';
-$string['auth_iomadoidcdescription'] = 'IOMAD OpenID Connect -lisäosa mahdollistaa kertakirjautumisen käyttämällä määritettävissä olevaa identiteetintarjoajaa.';
+$string['pluginname'] = 'OpenID Connect';
+$string['auth_iomadoidcdescription'] = 'OpenID Connect -lisäosa mahdollistaa kertakirjautumisen käyttämällä määritettävissä olevaa identiteetintarjoajaa.';
 $string['cfg_authendpoint_key'] = 'Todennuksen päätepiste';
 $string['cfg_authendpoint_desc'] = 'Käytettävän identiteetintarjoajan todennuksen päätepisteen URI.';
 $string['cfg_autoappend_key'] = 'Lisää automaattisesti';
@@ -67,7 +67,7 @@ $string['cfg_loginflow_rocreds_desc'] = 'Jos tämä kirjautumiskulku on käytös
 $string['cfg_iomadoidcresource_key'] = 'Resurssi';
 $string['cfg_iomadoidcresource_desc'] = 'OpenID Connect -resurssi, jota lähetettävä pyyntö koskee.';
 $string['cfg_iomadoidcscope_key'] = 'laajuus';
-$string['cfg_iomadoidcscope_desc'] = 'Käytettävä IOMADOIDC-soveltamisala.';
+$string['cfg_iomadoidcscope_desc'] = 'Käytettävä OIDC-soveltamisala.';
 $string['cfg_opname_key'] = 'Palveluntarjoajan nimi';
 $string['cfg_opname_desc'] = 'Tämä on loppukäyttäjälle näkyvä selite, joka ilmoittaa kirjautumiseen käytettävien tunnistetietojen tyypin. Tätä palveluntarjoajan selitettä käytetään tämän lisäosan kaikissa käyttäjälle näkyvissä osioissa.';
 $string['cfg_redirecturi_key'] = 'Uudelleenohjauksen URI';

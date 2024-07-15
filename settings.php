@@ -76,6 +76,12 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_configcheckbox('auth_iomadoidc/forceredirect'. $postfix,
         get_string('cfg_forceredirect_key', 'auth_iomadoidc'), get_string('cfg_forceredirect_desc', 'auth_iomadoidc'), 0));
 
+    // Silent login mode.
+    $forceloginconfigurl = new moodle_url('/admin/settings.php', ['section' => 'sitepolicies']);
+    $settings->add(new admin_setting_configcheckbox('auth_iomadoidc/silentloginmode' . $postfix,
+        get_string('cfg_silentloginmode_key', 'auth_iomadoidc'),
+        get_string('cfg_silentloginmode_desc', 'auth_iomadoidc', $forceloginconfigurl->out(false)), 0));
+
     // Auto-append.
     $settings->add(new admin_setting_configtext('auth_iomadoidc/autoappend'. $postfix,
         get_string('cfg_autoappend_key', 'auth_iomadoidc'), get_string('cfg_autoappend_desc', 'auth_iomadoidc'), '', PARAM_TEXT));

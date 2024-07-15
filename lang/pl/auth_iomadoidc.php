@@ -24,8 +24,8 @@
  * @copyright (C) 2014 onwards Microsoft, Inc. (http://microsoft.com/)
  */
 
-$string['pluginname'] = 'IOMAD OpenID Connect';
-$string['auth_iomadoidcdescription'] = 'Wtyczka IOMAD OpenID Connect udostępnia funkcję rejestracji jednokrotnej przy użyciu dostawców tożsamości, których można skonfigurować.';
+$string['pluginname'] = 'OpenID Connect';
+$string['auth_iomadoidcdescription'] = 'Wtyczka OpenID Connect udostępnia funkcję rejestracji jednokrotnej przy użyciu dostawców tożsamości, których można skonfigurować.';
 $string['cfg_authendpoint_key'] = 'Punkt końcowy autoryzacji';
 $string['cfg_authendpoint_desc'] = 'Identyfikator URI punktu końcowego autoryzacji od dostawcy tożsamości do wykorzystania.';
 $string['cfg_autoappend_key'] = 'Dołączaj automatycznie';
@@ -67,7 +67,7 @@ $string['cfg_loginflow_rocreds_desc'] = 'W przypadku tego przepływu użytkownik
 $string['cfg_iomadoidcresource_key'] = 'Zasób';
 $string['cfg_iomadoidcresource_desc'] = 'Zasób wtyczki OpenID Connect, do którego ma zostać wysłane żądanie.';
 $string['cfg_iomadoidcscope_key'] = 'Scope';
-$string['cfg_iomadoidcscope_desc'] = 'Zakres IOMADOIDC do użycia.';
+$string['cfg_iomadoidcscope_desc'] = 'Zakres OIDC do użycia.';
 $string['cfg_opname_key'] = 'Nazwa dostawcy';
 $string['cfg_opname_desc'] = 'Jest to etykieta dla użytkownika końcowego określająca rodzaj danych logowania, których użytkownik musi użyć do logowania. Ta etykieta jest używana w obszarach wtyczki widocznych dla użytkownika w celu zidentyfikowania dostawcy.';
 $string['cfg_redirecturi_key'] = 'Adres URI przekierowania';

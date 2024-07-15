@@ -24,8 +24,8 @@
  * @copyright (C) 2014 onwards Microsoft, Inc. (http://microsoft.com/)
  */
 
-$string['pluginname'] = 'IOMAD OpenID Connect';
-$string['auth_iomadoidcdescription'] = 'Das Plugin IOMAD OpenID Connect bietet eine Single-Sign-On-Funktion mit konfigurierbaren Identitätsprovidern.';
+$string['pluginname'] = 'OpenID Connect';
+$string['auth_iomadoidcdescription'] = 'Das Plugin OpenID Connect bietet eine Single-Sign-On-Funktion mit konfigurierbaren Identitätsprovidern.';
 $string['cfg_authendpoint_key'] = 'Autorisierungsendpunkt';
 $string['cfg_authendpoint_desc'] = 'Die URI des Autorisierungsendpunktes, dessen Verwendung Ihr Identitätsprovider vorschreibt.';
 $string['cfg_autoappend_key'] = 'Autom. anhängen';
@@ -67,7 +67,7 @@ $string['cfg_loginflow_rocreds_desc'] = 'Mit diesem Fluss gibt der Benutzer wie 
 $string['cfg_iomadoidcresource_key'] = 'Ressource';
 $string['cfg_iomadoidcresource_desc'] = 'Die OpenID Connect-Ressource, für die die Anfrage gesendet wird.';
 $string['cfg_iomadoidcscope_key'] = 'Umfang';
-$string['cfg_iomadoidcscope_desc'] = 'Der zu verwendende IOMADOIDC-Bereich.';
+$string['cfg_iomadoidcscope_desc'] = 'Der zu verwendende OIDC-Bereich.';
 $string['cfg_opname_key'] = 'Providername';
 $string['cfg_opname_desc'] = 'Hierbei handelt es sich um eine Bezeichnung für den Endbenutzer, die den Typ der Anmeldedaten kennzeichnet, die der Benutzer für die Anmeldung verwenden muss. Diese Bezeichnung wird in allen benutzerorientierten Teilen dieses Plugins zur Identifizierung Ihres Providers verwendet.';
 $string['cfg_redirecturi_key'] = 'Weiterleitungs-URI';

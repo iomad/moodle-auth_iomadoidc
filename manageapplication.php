@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * IOMAD OIDC application configuration page.
+ * IOMADOIDC application configuration page.
  *
  * @package auth_iomadoidc
  * @author Lai Wei <lai.wei@enovation.ie>
@@ -29,15 +29,6 @@ require_once(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->dirroot . '/auth/iomadoidc/lib.php');
 
-// IOMAD
-require_once($CFG->dirroot . '/local/iomad/lib/company.php');
-$companyid = iomad::get_my_companyid(context_system::instance(), false);
-if (!empty($companyid)) {
-    $postfix = "_$companyid";
-} else {
-    $postfix = "";
-}
-
 require_login();
 
 $url = new moodle_url('/auth/iomadoidc/manageapplication.php');
@@ -47,7 +38,7 @@ $PAGE->set_pagelayout('admin');
 $PAGE->set_heading(get_string('settings_page_application', 'auth_iomadoidc'));
 $PAGE->set_title(get_string('settings_page_application', 'auth_iomadoidc'));
 
-$jsparams = [AUTH_IOMADOIDC_IDP_TYPE_MICROSOFT, AUTH_IOMADOIDC_AUTH_METHOD_SECRET, AUTH_IOMADOIDC_AUTH_METHOD_CERTIFICATE,
+$jsparams = [AUTH_IOMADOIDC_IDP_TYPE_MICROSOFT_IDENTITY_PLATFORM, AUTH_IOMADOIDC_AUTH_METHOD_SECRET, AUTH_IOMADOIDC_AUTH_METHOD_CERTIFICATE,
     get_string('auth_method_certificate', 'auth_iomadoidc')];
 $jsmodule = [
     'name' => 'auth_iomadoidc',
@@ -63,12 +54,22 @@ $iomadoidcconfig = get_config('auth_iomadoidc');
 
 $form = new application(null, ['iomadoidcconfig' => $iomadoidcconfig]);
 
+require_once($CFG->dirroot . '/local/iomad/lib/company.php');
+$companyid = iomad::get_my_companyid(context_system::instance(), false);
+if (!empty($companyid)) {
+    $postfix = "_$companyid";
+} else {
+    $postfix = "";
+}
+
+
 $formdata = [];
 foreach (['idptype', 'clientid', 'clientauthmethod', 'clientsecret', 'clientprivatekey', 'clientcert',
-    'authendpoint', 'tokenendpoint', 'iomadoidcresource', 'iomadoidcscope'] as $field) {
-    $opname = $field . $postfix;
-    if (isset($iomadoidcconfig->$opname)) {
-        $formdata[$field] = $iomadoidcconfig->$opname;
+    'clientcertsource', 'clientprivatekeyfile', 'clientcertfile', 'clientcertpassphrase',
+    'authendpoint', 'tokenendpoint', 'iomadoidcresource', 'iomadoidcscope', 'secretexpiryrecipients'] as $field) {
+    $fieldname = $field . $postfix;
+    if (isset($iomadoidcconfig->$field)) {
+        $formdata[$fieldname] = $iomadoidcconfig->$fieldname;
     }
 }
 
@@ -90,41 +91,65 @@ if ($form->is_cancelled()) {
     switch ($fromform->clientauthmethod) {
         case AUTH_IOMADOIDC_AUTH_METHOD_SECRET:
             $configstosave[] = 'clientsecret';
+            $configstosave[] = 'secretexpiryrecipients';
             break;
         case AUTH_IOMADOIDC_AUTH_METHOD_CERTIFICATE:
-            $configstosave[] = 'clientprivatekey';
-            $configstosave[] = 'clientcert';
+            $configstosave[] = 'clientcertsource';
+            $configstosave[] = 'clientcertpassphrase';
+            switch ($fromform->clientcertsource) {
+                case AUTH_IOMADOIDC_AUTH_CERT_SOURCE_TEXT:
+                    $configstosave[] = 'clientprivatekey';
+                    $configstosave[] = 'clientcert';
+                    break;
+                case AUTH_IOMADOIDC_AUTH_CERT_SOURCE_FILE:
+                    $configstosave[] = 'clientprivatekeyfile';
+                    $configstosave[] = 'clientcertfile';
+                    break;
+            }
             break;
     }
 
     // Save config settings.
+    $updateapplicationtokenrequired = false;
+    $settingschanged = false;
     foreach ($configstosave as $config) {
-        $existingsetting = get_config('auth_iomadoidc', $config);
+        $configname = $config . $postfix;
+        $existingsetting = get_config('auth_iomadoidc', $configname);
         if ($fromform->$config != $existingsetting) {
-            set_config($config . $postfix, $fromform->$config, 'auth_iomadoidc');
-            add_to_config_log($config . $postfix, $existingsetting, $fromform->$config, 'auth_iomadoidc');
-        }
-    }
-
-    // Redirect message depend on IdP type.
-    $showprovideadminconsentnotification = false;
-
-    if ($fromform->idptype != AUTH_IOMADOIDC_IDP_TYPE_OTHER) {
-        if (auth_iomadoidc_is_local_365_installed()) {
-            require_once($CFG->dirroot . '/local/o365/classes/utils.php');
-            if (method_exists('\local_o365\utils', 'is_connected')) {
-                if (\local_o365\utils::is_connected()) {
-                    $showprovideadminconsentnotification = true;
-                }
+            set_config($configname, $fromform->$config, 'auth_iomadoidc');
+            add_to_config_log($configname, $existingsetting, $fromform->$config, 'auth_iomadoidc');
+            $settingschanged = true;
+            if ($config != 'secretexpiryrecipients') {
+                $updateapplicationtokenrequired = true;
             }
         }
     }
 
-    if ($showprovideadminconsentnotification) {
-        $localo365configurl = new moodle_url('/admin/settings.php', ['section' => 'local_o365']);
-        redirect($url, get_string('application_updated_azure', 'auth_iomadoidc', $localo365configurl->out()));
-    } else {
+    // Redirect destination and message depend on IdP type.
+    $isgraphapiconnected = false;
+    if ($fromform->idptype != AUTH_IOMADOIDC_IDP_TYPE_OTHER) {
+        if (auth_iomadoidc_is_local_365_installed()) {
+            $isgraphapiconnected = true;
+        }
+    }
+
+    if ($updateapplicationtokenrequired) {
+        if ($isgraphapiconnected) {
+            // First, delete the existing application token and purge cache.
+            unset_config('apptokens', 'local_o365');
+            unset_config('azuresetupresult', 'local_o365');
+            purge_all_caches();
+
+            // Then show the message to the user with instructions to update the application token.
+            $localo365configurl = new moodle_url('/admin/settings.php', ['section' => 'local_o365']);
+            redirect($localo365configurl, get_string('application_updated_microsoft', 'auth_iomadoidc'));
+        } else {
+            redirect($url, get_string('application_updated', 'auth_iomadoidc'));
+        }
+    } else if ($settingschanged) {
         redirect($url, get_string('application_updated', 'auth_iomadoidc'));
+    } else {
+        redirect($url, get_string('application_not_changed', 'auth_iomadoidc'));
     }
 }
 
