@@ -24,8 +24,8 @@
  * @copyright (C) 2014 onwards Microsoft, Inc. (http://microsoft.com/)
  */
 
-$string['pluginname'] = 'IOMAD OpenID Connect';
-$string['auth_iomadoidcdescription'] = 'El complemento IOMAD OpenID Connect ofrece funcionalidad de inicio de sesión único a través de proveedores de identidad configurables.';
+$string['pluginname'] = 'OpenID Connect';
+$string['auth_iomadoidcdescription'] = 'El complemento OpenID Connect ofrece funcionalidad de inicio de sesión único a través de proveedores de identidad configurables.';
 $string['cfg_authendpoint_key'] = 'Extremo de autorización';
 $string['cfg_authendpoint_desc'] = 'La URI del extremo de autorización del proveedor de identidad que va a utilizar.';
 $string['cfg_autoappend_key'] = 'Anexo automático';
@@ -67,7 +67,7 @@ $string['cfg_loginflow_rocreds_desc'] = 'Al usar este flujo, el usuario ingresa 
 $string['cfg_iomadoidcresource_key'] = 'Recurso';
 $string['cfg_iomadoidcresource_desc'] = 'El recurso de OpenID Connect para el cual enviar la solicitud.';
 $string['cfg_iomadoidcscope_key'] = 'Scope';
-$string['cfg_iomadoidcscope_desc'] = 'El alcance de IOMADOIDC a utilizar.';
+$string['cfg_iomadoidcscope_desc'] = 'El alcance de OIDC a utilizar.';
 $string['cfg_opname_key'] = 'Nombre del proveedor';
 $string['cfg_opname_desc'] = 'Esta es una etiqueta que apunta al usuario final e identifica el tipo de credenciales que el usuario debe utilizar para iniciar sesión. Esta etiqueta se utiliza durante todas las partes que apuntan al usuario de este complemento para identificar al proveedor.';
 $string['cfg_redirecturi_key'] = 'URI de redireccionamiento';

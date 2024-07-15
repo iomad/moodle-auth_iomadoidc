@@ -25,53 +25,75 @@
 
 namespace auth_iomadoidc;
 
+use Exception;
+use moodle_exception;
+use auth_iomadoidc\event\action_failed;
+use iomad;
+use context_system;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
  * General purpose utility class.
  */
 class utils {
+
+    /** @var string postfix for config based off of company id */
+    private $postfix;
+
     /**
-     * Process an IOMADOIDC JSON response.
+     * Constructor.
+     */
+    public function __construct() {
+        global $CFG;
+
+        require_once($CFG->dirroot . '/local/iomad/lib/company.php');
+        $companyid = iomad::get_my_companyid(context_system::instance(), false);
+        if (!empty($companyid)) {
+            $this->postfix = "_$companyid";
+        } else {
+            $this->postfix = "";
+        }
+    }
+
+    /**
+     * Process an OIDC JSON response.
      *
      * @param string $response The received JSON.
      * @param array $expectedstructure
      * @return array The parsed JSON.
+     * @throws moodle_exception
      */
     public static function process_json_response($response, array $expectedstructure = array()) {
-        $backtrace = debug_backtrace(0);
-        $callingline = (isset($backtrace[0]['line'])) ? $backtrace[0]['line'] : '?';
-        $caller = __METHOD__ . ':' . $callingline;
-
         $result = @json_decode($response, true);
         if (empty($result) || !is_array($result)) {
-            self::debug('Bad response received', $caller, $response);
-            throw new \moodle_exception('erroriomadoidccall', 'auth_iomadoidc');
+            self::debug('Bad response received', __METHOD__, $response);
+            throw new moodle_exception('erroriomadoidccall', 'auth_iomadoidc');
         }
 
         if (isset($result['error'])) {
             $errmsg = 'Error response received.';
-            self::debug($errmsg, $caller, $result);
+            self::debug($errmsg, __METHOD__, $result);
             if (isset($result['error_description'])) {
-                throw new \moodle_exception('erroriomadoidccall_message', 'auth_iomadoidc', '', $result['error_description']);
+                throw new moodle_exception('erroriomadoidccall_message', 'auth_iomadoidc', '', $result['error_description']);
             } else {
-                throw new \moodle_exception('erroriomadoidccall', 'auth_iomadoidc');
+                throw new moodle_exception('erroriomadoidccall', 'auth_iomadoidc');
             }
         }
 
         foreach ($expectedstructure as $key => $val) {
             if (!isset($result[$key])) {
                 $errmsg = 'Invalid structure received. No "'.$key.'"';
-                self::debug($errmsg, $caller, $result);
-                throw new \moodle_exception('erroriomadoidccall', 'auth_iomadoidc');
+                self::debug($errmsg, __METHOD__, $result);
+                throw new moodle_exception('erroriomadoidccall', 'auth_iomadoidc');
             }
 
             if ($val !== null && $result[$key] !== $val) {
                 $strreceivedval = self::tostring($result[$key]);
                 $strval = self::tostring($val);
                 $errmsg = 'Invalid structure received. Invalid "'.$key.'". Received "'.$strreceivedval.'", expected "'.$strval.'"';
-                self::debug($errmsg, $caller, $result);
-                throw new \moodle_exception('erroriomadoidccall', 'auth_iomadoidc');
+                self::debug($errmsg, __METHOD__, $result);
+                throw new moodle_exception('erroriomadoidccall', 'auth_iomadoidc');
             }
         }
         return $result;
@@ -92,13 +114,13 @@ class utils {
             }
         } else if (is_null($val)) {
             return '(null)';
-        } else if ($val instanceof \Exception) {
+        } else if ($val instanceof Exception) {
             $valinfo = [
                 'file' => $val->getFile(),
                 'line' => $val->getLine(),
                 'message' => $val->getMessage(),
             ];
-            if ($val instanceof \moodle_exception) {
+            if ($val instanceof moodle_exception) {
                 $valinfo['debuginfo'] = $val->debuginfo;
                 $valinfo['errorcode'] = $val->errorcode;
                 $valinfo['module'] = $val->module;
@@ -117,12 +139,18 @@ class utils {
      * @param null $debugdata
      */
     public static function debug($message, $where = '', $debugdata = null) {
-        $debugmode = (bool)get_config('auth_iomadoidc', 'debugmode');
+        $debugmode = (bool)get_config('auth_iomadoidc', 'debugmode' . $this->postfix);
         if ($debugmode === true) {
-            $fullmessage = (!empty($where)) ? $where : 'Unknown function';
-            $fullmessage .= ': '.$message;
-            $fullmessage .= ' Data: '.static::tostring($debugdata);
-            $event = \auth_iomadoidc\event\action_failed::create(['other' => $fullmessage]);
+            $backtrace = debug_backtrace();
+            $otherdata = [
+                'other' => [
+                    'message' => $message,
+                    'where' => $where,
+                    'debugdata' => $debugdata,
+                    'backtrace' => $backtrace,
+                ],
+            ];
+            $event = action_failed::create($otherdata);
             $event->trigger();
         }
     }
@@ -145,5 +173,50 @@ class utils {
     public static function get_frontchannellogouturl() {
         $logouturl = new \moodle_url('/auth/iomadoidc/logout.php');
         return $logouturl->out(false);
+    }
+
+    /**
+     * Get and check existence of OIDC client certificate path.
+     *
+     * @return string|bool cert path if exists otherwise false
+     */
+    public static function get_certpath() {
+        $clientcertfile = get_config('auth_iomadoidc', 'clientcertfile' . $this->postfix);
+        $certlocation = self::get_openssl_internal_path();
+        $certfile = "$certlocation/$clientcertfile";
+
+        if (is_file($certfile) && is_readable($certfile)) {
+            return "file://$certfile";
+        }
+
+        return false;
+    }
+
+    /**
+     * Get and check existence of OIDC client key path.
+     *
+     * @return string|bool key path if exists otherwise false
+     */
+    public static function get_keypath() {
+        $clientprivatekeyfile = get_config('auth_iomadoidc', 'clientprivatekeyfile' . $this->postfix);
+        $keylocation = self::get_openssl_internal_path();
+        $keyfile = "$keylocation/$clientprivatekeyfile";
+
+        if (is_file($keyfile) && is_readable($keyfile)) {
+            return "file://$keyfile";
+        }
+
+        return false;
+    }
+
+    /**
+     * Get openssl cert base path, which is dataroot/microsoft_certs.
+     *
+     * @return string base path to put cert files
+     */
+    public static function get_openssl_internal_path() {
+        global $CFG;
+
+        return $CFG->dataroot . '/microsoft_certs';
     }
 }

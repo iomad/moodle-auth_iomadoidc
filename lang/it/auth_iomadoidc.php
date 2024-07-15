@@ -24,8 +24,8 @@
  * @copyright (C) 2014 onwards Microsoft, Inc. (http://microsoft.com/)
  */
 
-$string['pluginname'] = 'IOMAD OpenID Connect';
-$string['auth_iomadoidcdescription'] = 'Il plugin IOMAD OpenID Connect fornisce funzionalità single-sign-on utilizzando Identity Provider configurabili.';
+$string['pluginname'] = 'OpenID Connect';
+$string['auth_iomadoidcdescription'] = 'Il plugin OpenID Connect fornisce funzionalità single-sign-on utilizzando Identity Provider configurabili.';
 $string['cfg_authendpoint_key'] = 'Endpoint di autorizzazione';
 $string['cfg_authendpoint_desc'] = 'L\'URI dell\'endpoint di autorizzazione dall\'Identity Provider da utilizzare.';
 $string['cfg_autoappend_key'] = 'Aggiungi automaticamente';
@@ -67,7 +67,7 @@ $string['cfg_loginflow_rocreds_desc'] = 'Utilizzando questo flusso, l\'utente in
 $string['cfg_iomadoidcresource_key'] = 'Risorsa';
 $string['cfg_iomadoidcresource_desc'] = 'La risorsa OpenID Connect per la quale inviare la richiesta.';
 $string['cfg_iomadoidcscope_key'] = 'Scopo';
-$string['cfg_iomadoidcscope_desc'] = 'L\'ambito IOMADOIDC da utilizzare.';
+$string['cfg_iomadoidcscope_desc'] = 'L\'ambito OIDC da utilizzare.';
 $string['cfg_opname_key'] = 'Nome del provider';
 $string['cfg_opname_desc'] = 'Si tratta di un\'etichetta presentata all\'utente finale che identifica il tipo di credenziali che l\'utente deve utilizzare per eseguire il login. Questa etichetta viene utilizzata in tutta la parte rivolta all\'utente del plugin per identificare il provider.';
 $string['cfg_redirecturi_key'] = 'URI di reindirizzamento';

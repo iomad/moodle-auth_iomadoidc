@@ -45,19 +45,10 @@ class auth_plugin_iomadoidc extends \auth_plugin_base {
      * Constructor.
      *
      * @param null $forceloginflow
+     * @throws moodle_exception
      */
     public function __construct($forceloginflow = null) {
-        global $SESSION, $CFG;
-
-        // IOMAD
-        require_once($CFG->dirroot . '/local/iomad/lib/company.php');
-        $companyid = iomad::get_my_companyid(context_system::instance(), false);
-        if (!empty($companyid)) {
-            $postfix = "_$companyid";
-        } else {
-            $postfix = "";
-        }
-
+        global $SESSION;
         $loginflow = 'authcode';
 
         if (isset($SESSION->stateadditionaldata) && !empty($SESSION->stateadditionaldata) &&
@@ -67,7 +58,7 @@ class auth_plugin_iomadoidc extends \auth_plugin_base {
             if (!empty($forceloginflow) && is_string($forceloginflow)) {
                 $loginflow = $forceloginflow;
             } else {
-                $configuredloginflow = get_config('auth_iomadoidc', 'loginflow' . $postfix);
+                $configuredloginflow = get_config('auth_iomadoidc', 'loginflow' . $this->postfix);
                 if (!empty($configuredloginflow)) {
                     $loginflow = $configuredloginflow;
                 }
@@ -77,9 +68,18 @@ class auth_plugin_iomadoidc extends \auth_plugin_base {
         if (class_exists($loginflowclass)) {
             $this->loginflow = new $loginflowclass($this->config);
         } else {
-            throw new \coding_exception(get_string('errorbadloginflow', 'auth_iomadoidc'));
+            throw new moodle_exception('errorbadloginflow', 'auth_iomadoidc');
         }
         $this->config = $this->loginflow->config;
+    }
+
+    /**
+     * Returns true if plugin can be manually set.
+     *
+     * @return bool
+     */
+    function can_be_manually_set() {
+        return true;
     }
 
     /**
@@ -119,10 +119,10 @@ class auth_plugin_iomadoidc extends \auth_plugin_base {
      * Determines if we will redirect to the redirecturi.
      *
      * @return bool If this returns true then redirect
-     * @throws \coding_exception
      */
     public function should_login_redirect() {
-        global $SESSION;
+        global $CFG, $SESSION;
+
         $iomadoidc = optional_param('iomadoidc', null, PARAM_BOOL);
         // Also support noredirect param - used by other auth plugins.
         $noredirect = optional_param('noredirect', 0, PARAM_BOOL);
@@ -138,13 +138,22 @@ class auth_plugin_iomadoidc extends \auth_plugin_base {
         }
 
         // Check whether we've skipped the login page already.
-        // This is here because loginpage_hook is called again during form
-        // submission (all of login.php is processed) and ?iomadoidc=off is not
-        // preserved forcing us to the IdP.
+        // This is here because loginpage_hook is called again during form submission (all of login.php is processed) and
+        // ?iomadoidc=off is not preserved forcing us to the IdP.
         //
-        // This isn't needed when duallogin is on because $iomadoidc will default to 0
-        // and duallogin is not part of the request.
+        // This isn't needed when duallogin is on because $iomadoidc will default to 0 and duallogin is not part of the request.
         if ((isset($SESSION->iomadoidc) && $SESSION->iomadoidc == 0)) {
+            if (!isset($SESSION->silent_login_mode)) {
+                return false;
+            }
+        }
+
+        // If the user is redirectred to the login page immediately after logging out, don't redirect.
+        $silentloginmodesetting = get_config('auth_iomadoidc', 'silentloginmode' . $this->postfix);
+        $forceredirectsetting = get_config('auth_iomadoidc', 'forceredirect' . $this->postfix);
+        $forceloginsetting = get_config('core', 'forcelogin');
+        if ($silentloginmodesetting && $forceredirectsetting && $forceloginsetting && isset($_SERVER['HTTP_REFERER']) &&
+            strpos($_SERVER['HTTP_REFERER'], $CFG->wwwroot) !== false) {
             return false;
         }
 
@@ -157,6 +166,7 @@ class auth_plugin_iomadoidc extends \auth_plugin_base {
         if (isset($SESSION->iomadoidc)) {
             unset($SESSION->iomadoidc);
         }
+
         return true;
     }
 
@@ -181,7 +191,7 @@ class auth_plugin_iomadoidc extends \auth_plugin_base {
     /**
      * Handle IOMAD OIDC disconnection from Moodle account.
      *
-     * @param bool $justremovetokens If true, just remove the stored IOMADIOMAD OIDC tokens for the user, otherwise revert login methods.
+     * @param bool $justremovetokens If true, just remove the stored IOMAD OIDC tokens for the user, otherwise revert login methods.
      * @param bool $donotremovetokens If true, do not remove tokens when disconnecting. This migrates from a login account to a
      *                                "linked" account.
      * @param moodle_url|null $redirect Where to redirect if successful.
@@ -296,16 +306,7 @@ class auth_plugin_iomadoidc extends \auth_plugin_base {
     public function postlogout_hook($user) {
         global $CFG, $DB;
 
-        // IOMAD
-        require_once($CFG->dirroot . '/local/iomad/lib/company.php');
-        $companyid = iomad::get_my_companyid(context_system::instance(), false);
-        if (!empty($companyid)) {
-            $postfix = "_$companyid";
-        } else {
-            $postfix = "";
-        }
-
-        $singlesignoutsetting = get_config('auth_iomadoidc' . $postfix, 'single_sign_off');
+        $singlesignoutsetting = get_config('auth_iomadoidc', 'single_sign_off' . $this->postfix);
 
         if ($singlesignoutsetting) {
             $redirect = false;
@@ -319,7 +320,7 @@ class auth_plugin_iomadoidc extends \auth_plugin_base {
             }
 
             if ($redirect) {
-                $logouturl = get_config('auth_iomadoidc' . $postfix, 'logouturi');
+                $logouturl = get_config('auth_iomadoidc', 'logouturi' . $this->postfix);
                 if (!$logouturl) {
                     $logouturl = 'https://login.microsoftonline.com/common/oauth2/logout?post_logout_redirect_uri=' .
                         urlencode($CFG->wwwroot);

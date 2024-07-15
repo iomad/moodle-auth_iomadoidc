@@ -24,8 +24,8 @@
  * @copyright (C) 2014 onwards Microsoft, Inc. (http://microsoft.com/)
  */
 
-$string['pluginname'] = 'IOMAD OpenID Connect';
-$string['auth_iomadoidcdescription'] = 'IOMAD OpenID Connectプラグインは、設定可能なアイデンティティプロバイダを使用してシングルサインオン機能を提供します。';
+$string['pluginname'] = 'OpenID Connect';
+$string['auth_iomadoidcdescription'] = 'OpenID Connectプラグインは、設定可能なアイデンティティプロバイダを使用してシングルサインオン機能を提供します。';
 $string['cfg_authendpoint_key'] = '認証エンドポイント';
 $string['cfg_authendpoint_desc'] = 'アイデンティティプロバイダが使用する認証エンドポイントのURIです。';
 $string['cfg_autoappend_key'] = '自動付加';
@@ -67,7 +67,7 @@ $string['cfg_loginflow_rocreds_desc'] = 'このフローでは、手動による
 $string['cfg_iomadoidcresource_key'] = 'リソース';
 $string['cfg_iomadoidcresource_desc'] = 'リクエストを送る、OpenID Connectのリソース。';
 $string['cfg_iomadoidcscope_key'] = '範囲';
-$string['cfg_iomadoidcscope_desc'] = '使用するIOMADOIDCスコープ。';
+$string['cfg_iomadoidcscope_desc'] = '使用するOIDCスコープ。';
 $string['cfg_opname_key'] = 'プロバイダ名';
 $string['cfg_opname_desc'] = 'これはユーザがログインするために使用する必要がある認証情報の種類を識別するラベルで、エンドユーザに表示されます。このラベルはプロバイダを識別するために、このプラグインのユーザに表示されるすべての部分で使用されます。';
 $string['cfg_redirecturi_key'] = 'リダイレクトURI';

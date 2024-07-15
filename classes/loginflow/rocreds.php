@@ -24,8 +24,8 @@
  */
 
 namespace auth_iomadoidc\loginflow;
-use iomad;
-use context_system;
+
+use auth_iomadoidc\utils;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -67,16 +67,7 @@ class rocreds extends base {
      * @return bool
      */
     public function loginpage_hook(&$frm, &$user) {
-        global $CFG, $DB;
-
-        // IOMAD
-        require_once($CFG->dirroot . '/local/iomad/lib/company.php');
-        $companyid = iomad::get_my_companyid(context_system::instance(), false);
-        if (!empty($companyid)) {
-            $postfix = "_$companyid";
-        } else {
-            $postfix = "";
-        }
+        global $DB;
 
         if (empty($frm)) {
             $frm = data_submitted();
@@ -101,7 +92,7 @@ class rocreds extends base {
             }
         }
 
-        $autoappend = get_config('auth_iomadoidc', 'autoappend' . $postfix);
+        $autoappend = get_config('auth_iomadoidc', 'autoappend' . $this->postfix);
         if (empty($autoappend)) {
             // If we're not doing autoappend, just let things flow naturally.
             return true;
@@ -170,13 +161,13 @@ class rocreds extends base {
         // Make request.
         $tokenparams = $client->rocredsrequest($iomadoidcusername, $password);
         if (!empty($tokenparams) && isset($tokenparams['token_type']) && $tokenparams['token_type'] === 'Bearer') {
-            list($iomadoidcuniqid, $idtoken) = $this->process_idtoken($tokenparams['id_token']);
+            [$iomadoidcuniqid, $idtoken] = $this->process_idtoken($tokenparams['id_token']);
 
             // Check restrictions.
             $passed = $this->checkrestrictions($idtoken);
             if ($passed !== true) {
                 $errstr = 'User prevented from logging in due to restrictions.';
-                \auth_iomadoidc\utils::debug($errstr, 'handleauthresponse', $idtoken);
+                utils::debug($errstr, __METHOD__, $idtoken);
                 return false;
             }
 
@@ -187,7 +178,7 @@ class rocreds extends base {
                 $originalupn = null;
                 if (auth_iomadoidc_is_local_365_installed()) {
                     $apiclient = \local_o365\utils::get_api();
-                    $userdetails = $apiclient->get_user($iomadoidcuniqid, true);
+                    $userdetails = $apiclient->get_user($iomadoidcuniqid);
                     if (!is_null($userdetails) && isset($userdetails['userPrincipalName']) &&
                         stripos($userdetails['userPrincipalName'], '#EXT#') !== false) {
                         $originalupn = $userdetails['userPrincipalName'];

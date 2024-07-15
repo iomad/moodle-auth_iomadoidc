@@ -24,8 +24,8 @@
  * @copyright (C) 2014 onwards Microsoft, Inc. (http://microsoft.com/)
  */
 
-$string['pluginname'] = 'IOMAD OpenID Connect';
-$string['auth_iomadoidcdescription'] = 'Le plug-in IOMAD OpenID Connect fournit une fonctionnalité SSO avec des fournisseurs d\'identité configurables.';
+$string['pluginname'] = 'OpenID Connect';
+$string['auth_iomadoidcdescription'] = 'Le plug-in OpenID Connect fournit une fonctionnalité SSO avec des fournisseurs d\'identité configurables.';
 
 $string['cfg_authendpoint_key'] = 'Point d\'accès d\'autorisation';
 $string['cfg_authendpoint_desc'] = 'URI du point d\'accès d\'autorisation de votre fournisseur d\'identité à utiliser.';
@@ -70,7 +70,7 @@ $string['cfg_loginflow_rocreds_desc'] = 'À l\'aide de cette méthode, l\'utilis
 $string['cfg_iomadoidcresource_key'] = 'Ressource';
 $string['cfg_iomadoidcresource_desc'] = 'Ressource OpenID Connect pour laquelle envoyer la demande.';
 $string['cfg_iomadoidcscope_key'] = 'Porté';
-$string['cfg_iomadoidcscope_desc'] = 'L\'étendue IOMADOIDC à utiliser.';
+$string['cfg_iomadoidcscope_desc'] = 'L\'étendue OIDC à utiliser.';
 $string['cfg_opname_key'] = 'Nom du fournisseur';
 $string['cfg_opname_desc'] = 'Il s\'agit d\'une étiquette destinée à l\'utilisateur final qui identifie le type d\'informations d\'identification dont l\'utilisateur doit se servir pour se connecter. Cette étiquette est utilisée sur toutes les sections permettant d\'identifier votre fournisseur et qui sont visibles par l\'utilisateur.';
 $string['cfg_redirecturi_key'] = 'URI de redirection';
@@ -135,10 +135,10 @@ $string['privacy:metadata:auth_iomadoidc_prevlogin:userid'] = 'L\'identifiant de
 $string['privacy:metadata:auth_iomadoidc_prevlogin:method'] = 'La méthode de connexion précédente';
 $string['privacy:metadata:auth_iomadoidc_prevlogin:password'] = 'Le mot de passe précédent de l\'utilisateur (chiffré)';
 $string['privacy:metadata:auth_iomadoidc_token'] = 'Jetons OpenID Connect';
-$string['privacy:metadata:auth_iomadoidc_token:iomadoidcuniqid'] = 'L\'identifiant utilisateur unique de IOMADOIDCs';
+$string['privacy:metadata:auth_iomadoidc_token:iomadoidcuniqid'] = 'L\'identifiant utilisateur unique de OIDCs';
 $string['privacy:metadata:auth_iomadoidc_token:username'] = 'Le nom d\'utilisateur de l\'utilisateur Moodle';
 $string['privacy:metadata:auth_iomadoidc_token:userid'] = 'Le ID de l\'utilisateur Moodle';
-$string['privacy:metadata:auth_iomadoidc_token:iomadoidcusername'] = 'Le nom d\'utilisateur de l\'utilisateur IOMADOIDC';
+$string['privacy:metadata:auth_iomadoidc_token:iomadoidcusername'] = 'Le nom d\'utilisateur de l\'utilisateur OIDC';
 $string['privacy:metadata:auth_iomadoidc_token:scope'] = 'La portée du jeton';
 $string['privacy:metadata:auth_iomadoidc_token:tokenresource'] = 'La ressource du jeton';
 $string['privacy:metadata:auth_iomadoidc_token:authcode'] = 'Le code d\'authentification du jeton';
