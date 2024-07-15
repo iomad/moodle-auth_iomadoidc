@@ -67,7 +67,7 @@ function xmldb_auth_iomadoidc_upgrade($oldversion) {
     }
 
     if ($oldversion < 2015012704) {
-        // Update OIDC users.
+        // Update IOMADOIDC users.
         $sql = 'SELECT u.id as userid,
                        u.username as username,
                        tok.id as tokenid,
@@ -332,18 +332,18 @@ function xmldb_auth_iomadoidc_upgrade($oldversion) {
         $authorizationendpoint = get_config('auth_iomadoidc', 'authendpoint');
         if (empty($idptypeconfig)) {
             if (!$authorizationendpoint) {
-                set_config('idptype', AUTH_OIDC_IDP_TYPE_MICROSOFT_ENTRA_ID, 'auth_iomadoidc');
+                set_config('idptype', AUTH_IOMADOIDC_IDP_TYPE_MICROSOFT_ENTRA_ID, 'auth_iomadoidc');
             } else {
                 $endpointversion = auth_iomadoidc_determine_endpoint_version($authorizationendpoint);
                 switch ($endpointversion) {
-                    case AUTH_OIDC_MICROSOFT_ENDPOINT_VERSION_1:
-                        set_config('idptype', AUTH_OIDC_IDP_TYPE_MICROSOFT_ENTRA_ID, 'auth_iomadoidc');
+                    case AUTH_IOMADOIDC_MICROSOFT_ENDPOINT_VERSION_1:
+                        set_config('idptype', AUTH_IOMADOIDC_IDP_TYPE_MICROSOFT_ENTRA_ID, 'auth_iomadoidc');
                         break;
-                    case AUTH_OIDC_MICROSOFT_ENDPOINT_VERSION_2:
-                        set_config('idptype', AUTH_OIDC_IDP_TYPE_MICROSOFT_IDENTITY_PLATFORM, 'auth_iomadoidc');
+                    case AUTH_IOMADOIDC_MICROSOFT_ENDPOINT_VERSION_2:
+                        set_config('idptype', AUTH_IOMADOIDC_IDP_TYPE_MICROSOFT_IDENTITY_PLATFORM, 'auth_iomadoidc');
                         break;
                     default:
-                        set_config('idptype', AUTH_OIDC_IDP_TYPE_OTHER, 'auth_iomadoidc');
+                        set_config('idptype', AUTH_IOMADOIDC_IDP_TYPE_OTHER, 'auth_iomadoidc');
                 }
             }
         }
@@ -355,9 +355,9 @@ function xmldb_auth_iomadoidc_upgrade($oldversion) {
             $clientcertificateconfig = get_config('auth_iomadoidc', 'clientcert');
             $clientprivatekeyconfig = get_config('auth_iomadoidc', 'clientprivatekey');
             if (empty($clientsecretconfig) && !empty($clientcertificateconfig) && !empty($clientprivatekeyconfig)) {
-                set_config('clientauthmethod', AUTH_OIDC_AUTH_METHOD_CERTIFICATE, 'auth_iomadoidc');
+                set_config('clientauthmethod', AUTH_IOMADOIDC_AUTH_METHOD_CERTIFICATE, 'auth_iomadoidc');
             } else {
-                set_config('clientauthmethod', AUTH_OIDC_AUTH_METHOD_SECRET, 'auth_iomadoidc');
+                set_config('clientauthmethod', AUTH_IOMADOIDC_AUTH_METHOD_SECRET, 'auth_iomadoidc');
             }
         }
 
@@ -385,7 +385,7 @@ function xmldb_auth_iomadoidc_upgrade($oldversion) {
     if ($oldversion < 2023100902) {
         // Set initial value for "clientcertsource" config.
         if (empty(get_config('auth_iomadoidc', 'clientcertsource'))) {
-            set_config('clientcertsource', AUTH_OIDC_AUTH_CERT_SOURCE_TEXT, 'auth_iomadoidc');
+            set_config('clientcertsource', AUTH_IOMADOIDC_AUTH_CERT_SOURCE_TEXT, 'auth_iomadoidc');
         }
 
         upgrade_plugin_savepoint(true, 2023100902, 'auth', 'iomadoidc');
