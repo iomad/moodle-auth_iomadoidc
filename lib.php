@@ -417,7 +417,16 @@ function auth_iomadoidc_apply_default_email_mapping() {
  */
 function auth_iomadoidc_display_auth_lock_options($settings, $auth, $userfields, $helptext, $mapremotefields, $updateremotefields,
     $customfields = array()) {
-    global $DB;
+    global $CFG, $DB;
+
+    // IOMAD
+    require_once($CFG->dirroot . '/local/iomad/lib/company.php');
+    $companyid = iomad::get_my_companyid(context_system::instance(), false);
+    if (!empty($companyid)) {
+        $postfix = "_$companyid";
+    } else {
+        $postfix = "";
+    }
 
     // Introductory explanation and help text.
     if ($mapremotefields) {
@@ -488,35 +497,35 @@ function auth_iomadoidc_display_auth_lock_options($settings, $auth, $userfields,
             // Display a message that the field can not be mapped because it's too long.
             $url = new moodle_url('/user/profile/index.php');
             $a = (object)['fieldname' => s($fieldname), 'shortname' => s($field), 'charlimit' => 67, 'link' => $url->out()];
-            $settings->add(new admin_setting_heading($auth.'/field_not_mapped_'.sha1($field), '',
+            $settings->add(new admin_setting_heading($auth.'/field_not_mapped_'.sha1($field) . $postfix, '',
                 get_string('cannotmapfield', 'auth', $a)));
         } else if ($mapremotefields) {
             // We are mapping to a remote field here.
             // Mapping.
             if ($field == 'email') {
-                $settings->add(new admin_setting_configselect("auth_iomadoidc/field_map_{$field}",
+                $settings->add(new admin_setting_configselect("auth_iomadoidc/field_map_{$field}{$postfix}",
                     get_string('auth_fieldmapping', 'auth', $fieldname), '', null, $emailremotefields));
             } else {
-                $settings->add(new admin_setting_configselect("auth_iomadoidc/field_map_{$field}",
+                $settings->add(new admin_setting_configselect("auth_iomadoidc/field_map_{$field}{$postfix}",
                     get_string('auth_fieldmapping', 'auth', $fieldname), '', null, $remotefields));
             }
 
             // Update local.
-            $settings->add(new admin_setting_configselect("auth_{$auth}/field_updatelocal_{$field}",
+            $settings->add(new admin_setting_configselect("auth_{$auth}/field_updatelocal_{$field}{$postfix}",
                 get_string('auth_updatelocalfield', 'auth', $fieldname), '', 'always', $updatelocaloptions));
 
             // Update remote.
             if ($updateremotefields) {
-                $settings->add(new admin_setting_configselect("auth_{$auth}/field_updateremote_{$field}",
+                $settings->add(new admin_setting_configselect("auth_{$auth}/field_updateremote_{$field}{$postfix}",
                     get_string('auth_updateremotefield', 'auth', $fieldname), '', 0, $updateextoptions));
             }
 
             // Lock fields.
-            $settings->add(new admin_setting_configselect("auth_{$auth}/field_lock_{$field}",
+            $settings->add(new admin_setting_configselect("auth_{$auth}/field_lock_{$field}{$postfix}",
                 get_string('auth_fieldlockfield', 'auth', $fieldname), '', 'unlocked', $lockoptions));
         } else {
             // Lock fields Only.
-            $settings->add(new admin_setting_configselect("auth_{$auth}/field_lock_{$field}",
+            $settings->add(new admin_setting_configselect("auth_{$auth}/field_lock_{$field}{$postfix}",
                 get_string('auth_fieldlockfield', 'auth', $fieldname), '', 'unlocked', $lockoptions));
         }
     }
