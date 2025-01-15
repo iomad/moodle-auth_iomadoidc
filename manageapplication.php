@@ -68,8 +68,8 @@ foreach (['idptype', 'clientid', 'clientauthmethod', 'clientsecret', 'clientpriv
     'clientcertsource', 'clientprivatekeyfile', 'clientcertfile', 'clientcertpassphrase',
     'authendpoint', 'tokenendpoint', 'iomadoidcresource', 'iomadoidcscope', 'secretexpiryrecipients'] as $field) {
     $fieldname = $field . $postfix;
-    if (isset($iomadoidcconfig->$field)) {
-        $formdata[$fieldname] = $iomadoidcconfig->$fieldname;
+    if (isset($iomadoidcconfig->$fieldname)) {
+        $formdata[$field] = $iomadoidcconfig->$fieldname;
     }
 }
 
