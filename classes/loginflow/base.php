@@ -51,6 +51,7 @@ class base {
 
     /** @var string postfix for config based off of company id */
     protected $postfix;
+    protected $filenum;
 
     /**
      * Constructor.
@@ -62,8 +63,10 @@ class base {
         $companyid = iomad::get_my_companyid(context_system::instance(), false);
         if (!empty($companyid)) {
             $this->postfix = "_$companyid";
+            $this->filenum = $companyid;
         } else {
             $this->postfix = "";
+            $this->filenum = 0;
         }
 
         $default = [

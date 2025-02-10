@@ -28,13 +28,13 @@ use auth_iomadoidc\form\application;
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->dirroot . '/auth/iomadoidc/lib.php');
+$companyonly = optional_param('companyonly', false, PARAM_BOOL);
 
 require_login();
 
 $url = new moodle_url('/auth/iomadoidc/manageapplication.php');
 $PAGE->set_url($url);
 $PAGE->set_context(context_system::instance());
-$PAGE->set_pagelayout('admin');
 $PAGE->set_heading(get_string('settings_page_application', 'auth_iomadoidc'));
 $PAGE->set_title(get_string('settings_page_application', 'auth_iomadoidc'));
 
@@ -46,14 +46,6 @@ $jsmodule = [
 ];
 $PAGE->requires->js_init_call('M.auth_iomadoidc.init', $jsparams, true, $jsmodule);
 
-admin_externalpage_setup('auth_iomadoidc_application');
-
-require_admin();
-
-$iomadoidcconfig = get_config('auth_iomadoidc');
-
-$form = new application(null, ['iomadoidcconfig' => $iomadoidcconfig]);
-
 require_once($CFG->dirroot . '/local/iomad/lib/company.php');
 $companyid = iomad::get_my_companyid(context_system::instance(), false);
 if (!empty($companyid)) {
@@ -62,8 +54,23 @@ if (!empty($companyid)) {
     $postfix = "";
 }
 
+// Is this from the company advanced settings page?
+if ($companyonly && !empty($companyid)) {
+    $companycontext = \core\context\company::instance($companyid);
+    //iomad::require_capability('block/iomad_company_admin:configiomadoidc', $companycontext);
+    $PAGE->set_pagelayout('base');
+    $returnurl = new moodle_url('/blocks/iomad_company_admin/company_advanced_settings.php');
+} else {
+    admin_externalpage_setup('auth_iomadoidc_application');
+    require_admin();
+    $returnurl = $url;
+}
 
-$formdata = [];
+$iomadoidcconfig = get_config('auth_iomadoidc');
+
+$form = new application(null, ['iomadoidcconfig' => $iomadoidcconfig]);
+
+$formdata = ['companyonly' => $companyonly];
 foreach (['idptype', 'clientid', 'clientauthmethod', 'clientsecret', 'clientprivatekey', 'clientcert',
     'clientcertsource', 'clientprivatekeyfile', 'clientcertfile', 'clientcertpassphrase',
     'authendpoint', 'tokenendpoint', 'iomadoidcresource', 'iomadoidcscope', 'secretexpiryrecipients'] as $field) {
@@ -76,7 +83,7 @@ foreach (['idptype', 'clientid', 'clientauthmethod', 'clientsecret', 'clientpriv
 $form->set_data($formdata);
 
 if ($form->is_cancelled()) {
-    redirect($url);
+    redirect($returnurl);
 } else if ($fromform = $form->get_data()) {
     // Handle odd cases where clientauthmethod is not received.
     if (!isset($fromform->clientauthmethod)) {
@@ -144,12 +151,12 @@ if ($form->is_cancelled()) {
             $localo365configurl = new moodle_url('/admin/settings.php', ['section' => 'local_o365']);
             redirect($localo365configurl, get_string('application_updated_microsoft', 'auth_iomadoidc'));
         } else {
-            redirect($url, get_string('application_updated', 'auth_iomadoidc'));
+            redirect($returnurl, get_string('application_updated', 'auth_iomadoidc'));
         }
     } else if ($settingschanged) {
-        redirect($url, get_string('application_updated', 'auth_iomadoidc'));
+        redirect($returnurl, get_string('application_updated', 'auth_iomadoidc'));
     } else {
-        redirect($url, get_string('application_not_changed', 'auth_iomadoidc'));
+        redirect($returnurl, get_string('application_not_changed', 'auth_iomadoidc'));
     }
 }
 
@@ -158,4 +165,3 @@ echo $OUTPUT->header();
 $form->display();
 
 echo $OUTPUT->footer();
-

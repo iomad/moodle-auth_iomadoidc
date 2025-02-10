@@ -58,22 +58,23 @@ function auth_iomadoidc_initialize_customicon($filefullname) {
     // IOMAD
     require_once($CFG->dirroot . '/local/iomad/lib/company.php');
     $companyid = iomad::get_my_companyid(context_system::instance(), false);
+    $postfix = "";
+    $filenum = 0;
     if (!empty($companyid)) {
         $postfix = "_$companyid";
-    } else {
-        $postfix = "";
+        $filenum = $companyid;
     }
 
 
     $file = get_config('auth_iomadoidc', 'customicon' . $postfix);
     $systemcontext = \context_system::instance();
-    $fullpath = "/{$systemcontext->id}/auth_iomadoidc/customicon/0{$file}";
+    $fullpath = "/{$systemcontext->id}/auth_iomadoidc/customicon/{$filenum}{$file}";
 
     $fs = get_file_storage();
     if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
         return false;
     }
-    $pixpluginsdir = 'pix_plugins/auth/iomadoidc/0';
+    $pixpluginsdir = 'pix_plugins/auth/iomadoidc/' . $filenum;
     $pixpluginsdirparts = explode('/', $pixpluginsdir);
     $curdir = $CFG->dataroot;
     foreach ($pixpluginsdirparts as $dir) {
@@ -83,8 +84,8 @@ function auth_iomadoidc_initialize_customicon($filefullname) {
         }
     }
 
-    if (file_exists($CFG->dataroot . '/pix_plugins/auth/iomadoidc/0')) {
-        $file->copy_content_to($CFG->dataroot . '/pix_plugins/auth/iomadoidc/0/customicon.jpg');
+    if (file_exists($CFG->dataroot . '/pix_plugins/auth/iomadoidc/' . $filenum)) {
+        $file->copy_content_to($CFG->dataroot . '/pix_plugins/auth/iomadoidc/' . $filenum . '/customicon.jpg');
         theme_reset_all_caches();
     }
 }

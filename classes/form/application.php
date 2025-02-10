@@ -180,6 +180,9 @@ class application extends moodleform {
             $mform->addElement('static', 'secretexpiryrecipients_help', '', get_string('secretexpiryrecipients_help', 'auth_iomadoidc'));
         }
 
+        $mform->addElement('hidden', 'companyonly');
+        $mform->setType('companyonly', PARAM_BOOL);
+
         // Save buttons.
         $this->add_action_buttons();
     }
