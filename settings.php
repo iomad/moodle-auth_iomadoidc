@@ -34,10 +34,11 @@ use auth_iomadoidc\utils;
 // IOMAD
 require_once($CFG->dirroot . '/local/iomad/lib/company.php');
 $companyid = iomad::get_my_companyid(context_system::instance(), false);
+$filenum = 0;
+$postfix = "";
 if (!empty($companyid)) {
     $postfix = "_$companyid";
-} else {
-    $postfix = ""; 
+    $filenum = $companyid;
 }
 
 require_once($CFG->dirroot . '/auth/iomadoidc/lib.php');
@@ -219,8 +220,8 @@ if ($hassiteconfig) {
     // Custom icon.
     $configkey = new lang_string('cfg_customicon_key', 'auth_iomadoidc');
     $configdesc = new lang_string('cfg_customicon_desc', 'auth_iomadoidc');
-    $customiconsetting = new admin_setting_configstoredfile('auth_iomadoidc/customicon'. $postfix,
-        get_string('cfg_customicon_key', 'auth_iomadoidc'), get_string('cfg_customicon_desc', 'auth_iomadoidc'), 'customicon');
+    $customiconsetting = new admin_setting_configstoredfile('auth_iomadoidc/customicon',
+        get_string('cfg_customicon_key', 'auth_iomadoidc'), get_string('cfg_customicon_desc', 'auth_iomadoidc'), 'customicon', $filenum);
     $customiconsetting->set_updatedcallback('auth_iomadoidc_initialize_customicon');
     $settings->add($customiconsetting);
 
